@@ -3,7 +3,7 @@
 - git: {local-name: doxygen_catkin, uri: 'git@github.com:ethz-asl/doxygen_catkin.git'}
 - git: {local-name: eigen_catkin, uri: 'git@github.com:ethz-asl/eigen_catkin.git'}
 - git: {local-name: eigen_checks, uri: 'git@github.com:ethz-asl/eigen_checks.git'}
-- git: {local-name: ethzasl_brisk, uri: 'git@github.com:ethz-asl/ethzasl_brisk.git'}
+- git: {local-name: ethzasl_brisk, uri: 'git@github.com:willat343/ethzasl_brisk.git'}
 - git: {local-name: gflags_catkin, uri: 'git@github.com:ethz-asl/gflags_catkin.git'}
 - git: {local-name: glog_catkin, uri: 'git@github.com:ethz-asl/glog_catkin.git'}
 - git: {local-name: grid_map, uri: 'git@github.com:ethz-asl/grid_map.git'}
