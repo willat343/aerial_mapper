@@ -33,4 +33,6 @@
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
 
+  <depend>grid_map_rviz_plugin</depend>
+
 </package>
