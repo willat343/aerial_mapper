@@ -13,3 +13,4 @@
 - git: {local-name: pcl_catkin, uri: 'git@github.com:ethz-asl/pcl_catkin.git'}
 - git: {local-name: vision_opencv, version: noetic, uri: 'git@github.com:willat343/vision_opencv.git'}
 - git: {local-name: yaml_cpp_catkin, uri: 'git@github.com:ethz-asl/yaml_cpp_catkin.git'}
+- git: {local-name: protobuf_catkin, uri: 'git@github.com:ethz-asl/protobuf_catkin.git'}
