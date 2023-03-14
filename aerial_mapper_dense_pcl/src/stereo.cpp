@@ -43,7 +43,7 @@ Stereo::Stereo(const std::shared_ptr<aslam::NCamera> ncameras,
   T_B_C_ = ncameras_->get_T_C_B(kFrameIdx).inverse();
 
   // Define the point cloud message.
-  point_cloud_ros_msg_.header.frame_id = "/world";
+  point_cloud_ros_msg_.header.frame_id = "world";
   point_cloud_ros_msg_.height = image_resolution.height;
   point_cloud_ros_msg_.width = image_resolution.width;
   point_cloud_ros_msg_.fields.resize(4);
