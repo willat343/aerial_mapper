@@ -162,10 +162,31 @@ void Stereo::processStereoFrame(
   rectifier_->rectifyStereoPair(stereo_rig_params_, image_undistorted_1,
                                 image_undistorted_2, &rectified_stereo_pair);
 
+  RectifiedStereoPair rectified_stereo_pair_disparity;
+  rectified_stereo_pair_disparity.baseline = rectified_stereo_pair.baseline;
+  rectified_stereo_pair_disparity.R_G_C = rectified_stereo_pair.R_G_C;
+  rectified_stereo_pair_disparity.mask = rectified_stereo_pair.mask;
+
+  if(rectified_stereo_pair.image_left.type() != CV_8UC1) {
+    cv::cvtColor(rectified_stereo_pair.image_left, rectified_stereo_pair_disparity.image_left, CV_BGR2GRAY);
+  }
+  else {
+    rectified_stereo_pair_disparity.image_left = rectified_stereo_pair.image_left;
+  }
+
+  if(rectified_stereo_pair.image_right.type() != CV_8UC1) {
+    cv::cvtColor(rectified_stereo_pair.image_right, rectified_stereo_pair_disparity.image_right, CV_BGR2GRAY);
+  }
+  else {
+    rectified_stereo_pair_disparity.image_right = rectified_stereo_pair.image_right;
+  }
+  
   // 3. Compute disparity map based on rectified images.
   DensifiedStereoPair densified_stereo_pair;
-  densifier_->computeDisparityMap(rectified_stereo_pair,
+  densifier_->computeDisparityMap(rectified_stereo_pair_disparity,
                                   &densified_stereo_pair);
+  // densifier_->computeDisparityMap(rectified_stereo_pair,
+  //                                 &densified_stereo_pair);                                
 
   // 4. Compute point cloud.
   point_cloud_ros_msg_.data.clear();
