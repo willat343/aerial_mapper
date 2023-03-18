@@ -117,6 +117,7 @@ void Stereo::addFrame(const Pose& T_G_B, const Image& image_raw,
   // SGBM/BM blockmatching requires images of type CV_8UC1.
   cv::Mat image;
   if (image_raw.type() == CV_8UC1) {
+    image = image_raw;
   } else if (image_raw.type() == CV_8UC3) {
     cv::cvtColor(image_raw, image, CV_RGB2GRAY);
   } else {
@@ -128,14 +129,14 @@ void Stereo::addFrame(const Pose& T_G_B, const Image& image_raw,
     // Prepare the first/left frame of the stereo pair.
     stereo_rig_params_.t_G_C1 = (T_G_B * T_B_C_).getPosition();
     stereo_rig_params_.R_G_C1 = (T_G_B * T_B_C_).getRotationMatrix();
-    image_distorted_1_ = image_raw;
+    image_distorted_1_ = image;
     first_frame_ = false;
     return;
   }
   // Prepare the second/right frame of the stereo pair.
   stereo_rig_params_.t_G_C2 = (T_G_B * T_B_C_).getPosition();
   stereo_rig_params_.R_G_C2 = (T_G_B * T_B_C_).getRotationMatrix();
-  image_distorted_2_ = image_raw;
+  image_distorted_2_ = image;
 
   processStereoFrame(point_cloud, point_cloud_intensities);
 
@@ -162,31 +163,12 @@ void Stereo::processStereoFrame(
   rectifier_->rectifyStereoPair(stereo_rig_params_, image_undistorted_1,
                                 image_undistorted_2, &rectified_stereo_pair);
 
-  RectifiedStereoPair rectified_stereo_pair_disparity;
-  rectified_stereo_pair_disparity.baseline = rectified_stereo_pair.baseline;
-  rectified_stereo_pair_disparity.R_G_C = rectified_stereo_pair.R_G_C;
-  rectified_stereo_pair_disparity.mask = rectified_stereo_pair.mask;
-
-  if(rectified_stereo_pair.image_left.type() != CV_8UC1) {
-    cv::cvtColor(rectified_stereo_pair.image_left, rectified_stereo_pair_disparity.image_left, CV_BGR2GRAY);
-  }
-  else {
-    rectified_stereo_pair_disparity.image_left = rectified_stereo_pair.image_left;
-  }
-
-  if(rectified_stereo_pair.image_right.type() != CV_8UC1) {
-    cv::cvtColor(rectified_stereo_pair.image_right, rectified_stereo_pair_disparity.image_right, CV_BGR2GRAY);
-  }
-  else {
-    rectified_stereo_pair_disparity.image_right = rectified_stereo_pair.image_right;
-  }
-  
   // 3. Compute disparity map based on rectified images.
   DensifiedStereoPair densified_stereo_pair;
-  densifier_->computeDisparityMap(rectified_stereo_pair_disparity,
+  CHECK(rectified_stereo_pair.image_left.type() == CV_8UC1);
+  CHECK(rectified_stereo_pair.image_right.type() == CV_8UC1);
+  densifier_->computeDisparityMap(rectified_stereo_pair,
                                   &densified_stereo_pair);
-  // densifier_->computeDisparityMap(rectified_stereo_pair,
-  //                                 &densified_stereo_pair);                                
 
   // 4. Compute point cloud.
   point_cloud_ros_msg_.data.clear();
