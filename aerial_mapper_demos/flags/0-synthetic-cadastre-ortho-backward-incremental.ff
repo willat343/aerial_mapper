@@ -1,6 +1,6 @@
 # general
---alsologtostderr=false
---v=0
+--alsologtostderr=true
+--v=200
 
 # dataset
 --backward_grid_data_directory=/tmp/simulation/
