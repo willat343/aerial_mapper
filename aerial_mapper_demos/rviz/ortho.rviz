@@ -4,14 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
-        - /Grid1
         - /Grid1/Offset1
-        - /PointCloud21
-        - /Pose1
-        - /Pose2
-        - /GridMap1
       Splitter Ratio: 0.570231020450592
     Tree Height: 905
   - Class: rviz/Selection
@@ -31,7 +24,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: PointCloud2
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -64,12 +57,12 @@ Visualization Manager:
         Min Value: -10
         Value: true
       Axis: Z
-      Channel Name: intensity
+      Channel Name: rgb
       Class: rviz/PointCloud2
       Color: 255; 255; 255
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -84,7 +77,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Alpha: 1
       Axes Length: 5
       Axes Radius: 0.5
@@ -127,8 +120,8 @@ Visualization Manager:
       Enabled: true
       Grid Cell Decimation: 1
       Grid Line Thickness: 0.10000000149011612
-      Height Layer: ortho
-      Height Transformer: Flat
+      Height Layer: elevation
+      Height Transformer: Layer
       History Length: 1
       Invert ColorMap: false
       Max Color: 255; 255; 255
@@ -169,7 +162,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 457.3351745605469
+      Distance: 172.78463745117188
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -177,17 +170,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 21.045900344848633
-        Y: 30.095300674438477
-        Z: 10.15779972076416
+        X: 15.761068344116211
+        Y: -12.712149620056152
+        Z: 0.9023221135139465
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5147969126701355
+      Pitch: 0.6747972369194031
       Target Frame: <Fixed Frame>
-      Yaw: 5.3983025550842285
+      Yaw: 5.613276481628418
     Saved: ~
 Window Geometry:
   Displays:
@@ -206,4 +199,4 @@ Window Geometry:
     collapsed: true
   Width: 1873
   X: 72
-  Y: 70
+  Y: 27

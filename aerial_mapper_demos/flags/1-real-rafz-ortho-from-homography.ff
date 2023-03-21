@@ -1,5 +1,5 @@
 --alsologtostderr=true
---v=100
+--v=200
 --forward_homography_data_directory=/tmp/simulation/
 --forward_homography_filename_poses=opt_poses.txt
 --forward_homography_prefix_images=opt_image_
