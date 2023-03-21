@@ -11,7 +11,7 @@
 # backward grid orthomosaic
 --backward_grid_show_orthomosaic_opencv=true
 --backward_grid_save_orthomosaic_jpg=true
---backward_grid_orthomosaic_jpg_filename=/home/william/Documents/eth/3d_vision/datasets/aerial_mapper_samples/cadastre/orthomosaic_batch.jpg
+--backward_grid_orthomosaic_jpg_filename=/tmp/orthomosaic_batch.jpg
 --backward_grid_orthomosaic_elevation=414.087
 --backward_grid_use_digital_elevation_map=false
 --backward_grid_grid_mode_batch=true
