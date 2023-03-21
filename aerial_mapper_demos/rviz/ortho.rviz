@@ -120,8 +120,8 @@ Visualization Manager:
       Enabled: true
       Grid Cell Decimation: 1
       Grid Line Thickness: 0.10000000149011612
-      Height Layer: ortho
-      Height Transformer: Flat
+      Height Layer: elevation
+      Height Transformer: Layer
       History Length: 1
       Invert ColorMap: false
       Max Color: 255; 255; 255
@@ -162,7 +162,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 194.570068359375
+      Distance: 172.78463745117188
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -170,17 +170,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 21.045900344848633
-        Y: 30.095300674438477
-        Z: 10.15779972076416
+        X: 15.761068344116211
+        Y: -12.712149620056152
+        Z: 0.9023221135139465
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6297973394393921
+      Pitch: 0.6747972369194031
       Target Frame: <Fixed Frame>
-      Yaw: 5.808281421661377
+      Yaw: 5.613276481628418
     Saved: ~
 Window Geometry:
   Displays:
