@@ -21,7 +21,9 @@ typedef std::vector<Image> Images;
 
 namespace io {
 
-enum PoseFormat { Standard, COLMAP, PIX4D, ROS };
+enum PoseFormat { Standard, COLMAP, PIX4D, ROS, StandardNamed };
+
+PoseFormat to_format(const std::string& format);
 
 class AerialMapperIO {
  public:
@@ -29,14 +31,17 @@ class AerialMapperIO {
   AerialMapperIO();
 
   void loadPosesFromFile(const PoseFormat& format, const std::string& filename,
-                         Poses* T_G_Bs);
+                         Poses* T_G_Bs, std::vector<std::string>* image_names = nullptr);
   void loadPosesFromFileStandard(const std::string& filename, Poses* T_G_Bs);
+  void loadPosesFromFileStandardNamed(const std::string& filename, Poses* T_G_Bs,
+                                      std::vector<std::string>* image_names);
   void loadImagesFromFile(const std::string& filename_base, size_t num_poses,
-                          Images* images, bool load_colored_images = false);
+                          Images* images, bool load_colored_images = false,
+                          bool show = false);
 
   void loadImagesFromFile(const std::string& directory,
                           std::vector<std::string> image_names, Images* images,
-                          bool load_colored_images = false);
+                          bool load_colored_images = false, bool show = false);
 
   aslam::NCamera::Ptr loadCameraRigFromFile(
       const std::string& filename_ncameras_yaml);

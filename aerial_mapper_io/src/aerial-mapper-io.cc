@@ -32,9 +32,26 @@ namespace io {
 
 AerialMapperIO::AerialMapperIO() {}
 
+PoseFormat to_format(const std::string& format) {
+    if (format == "Standard") {
+        return PoseFormat::Standard;
+    } else if (format == "COLMAP") {
+        return PoseFormat::COLMAP;
+    } else if (format == "PIX4D") {
+        return PoseFormat::PIX4D;
+    } else if (format == "ROS") {
+        return PoseFormat::ROS;
+    } else if (format == "StandardNamed") {
+        return PoseFormat::StandardNamed;
+    } else {
+        LOG(FATAL) << "PoseFormat " << format << " not recognised.";
+    }
+}
+
 void AerialMapperIO::loadPosesFromFile(const PoseFormat& format,
                                        const std::string& filename,
-                                       Poses* T_G_Bs) {
+                                       Poses* T_G_Bs,
+                                       std::vector<std::string>* image_names) {
   CHECK(T_G_Bs);
   CHECK(!filename.empty()) << "Empty filename";
   LOG(INFO) << "Loading body poses via format: " <<
@@ -49,9 +66,16 @@ void AerialMapperIO::loadPosesFromFile(const PoseFormat& format,
     case PoseFormat::PIX4D:
       LOG(FATAL) << "Not yet implemented!";
     break;
-//    case PoseFormat::ROS:
-//      loadPosesFromFileRos(filename, T_G_Bs);
-//    break;
+    case PoseFormat::ROS:
+      LOG(FATAL) << "Not yet implemented!";
+    //   loadPosesFromFileRos(filename, T_G_Bs);
+    break;
+    case PoseFormat::StandardNamed:
+      loadPosesFromFileStandardNamed(filename, T_G_Bs, image_names);
+    break;
+    default:
+      LOG(FATAL) << "PoseFormat not handled.";
+      break;
   }
 }
 
@@ -120,6 +144,31 @@ void AerialMapperIO::loadPosesFromFileStandard(
   LOG(INFO) << "T_G_Bs->size() = " << T_G_Bs->size();
 }
 
+void AerialMapperIO::loadPosesFromFileStandardNamed(
+    const std::string& filename, Poses* T_G_Bs,
+    std::vector<std::string>* image_names) {
+  CHECK(T_G_Bs);
+  CHECK(!filename.empty()) << "Empty filename";
+  CHECK(image_names);
+  LOG(INFO) << "Loading body poses from: " << filename;
+  std::ifstream infile(filename);
+  std::string image_name;
+  double x, y, z, qw, qx, qy, qz;
+  while (infile >> image_name >> x >> y >> z >> qw >> qx >> qy >> qz) {
+    aslam::Quaternion q(qw, qx, qy, qz);
+    Eigen::Vector3d t(x, y, z);
+    aslam::Transformation T(q, t);
+    T_G_Bs->push_back(T);
+    image_names->push_back(image_name);
+    if (infile.eof()) {
+      break;
+    }
+  }
+  CHECK(T_G_Bs->size() > 0) << "No poses loaded.";
+  CHECK(T_G_Bs->size() == image_names->size());
+  LOG(INFO) << "T_G_Bs->size() = " << T_G_Bs->size();
+}
+
 void AerialMapperIO::convertFromSimulation() {
   std::string directory = "/tmp/to_convert/";
   std::string filename_vi_imu_poses = "vi_imu_poses.csv";
@@ -154,7 +203,7 @@ void AerialMapperIO::toStandardFormat(
   LOG(INFO) << "Loading from " << path_filename_blender_id_time;
   while (infile >> id >> image_name) {
     const std::string& image_name_string =
-        std::to_string(static_cast<int64_t>(image_name));
+        std::to_string(static_cast<int64_t>(image_name)) + ".png";
     int64_t image_timestamp = static_cast<int64_t>(image_name) - 1;
     image_names.push_back(image_name_string);
     image_timestamps.push_back(image_timestamp);
@@ -206,7 +255,7 @@ void AerialMapperIO::toStandardFormat(
 
 void AerialMapperIO::loadImagesFromFile(
     const std::string& filename_base, size_t num_poses, Images* images,
-    bool load_colored_images) {
+    bool load_colored_images, bool show) {
   CHECK(images);
   LOG(INFO) << "Loading images from directory+prefix: " << filename_base;
   for (size_t i = 0u; i < num_poses; ++i) {
@@ -218,8 +267,10 @@ void AerialMapperIO::loadImagesFromFile(
     } else {
       image = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
     }
-    cv::imshow("Image", image);
-    cv::waitKey(1);
+    if (show) {
+        cv::imshow("Image", image);
+        cv::waitKey(1);
+    }
     images->push_back(image);
   }
   CHECK(images->size() > 0) << "No images loaded.";
@@ -228,20 +279,21 @@ void AerialMapperIO::loadImagesFromFile(
 
 void AerialMapperIO::loadImagesFromFile(
     const std::string& directory, std::vector<std::string> image_names,
-    Images* images, bool load_colored_images) {
+    Images* images, bool load_colored_images, bool show) {
   CHECK(images);
   LOG(INFO) << "Loading images from directory: " << directory;
   for (const std::string image_name : image_names) {
-    const std::string& filename =
-        directory + image_name + ".png";
+    const std::string& filename = directory + image_name;
     cv::Mat image;
     if (!load_colored_images) {
       image = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
     } else {
       image = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
     }
-    cv::imshow("Image", image);
-    cv::waitKey(1);
+    if (show) {
+        cv::imshow("Image", image);
+        cv::waitKey(1);
+    }
     images->push_back(image);
   }
   CHECK(images->size() > 0) << "No images loaded.";

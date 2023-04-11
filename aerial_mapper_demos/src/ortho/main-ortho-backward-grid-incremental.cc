@@ -22,8 +22,12 @@ DEFINE_string(backward_grid_data_directory, "",
 DEFINE_string(backward_grid_filename_poses, "",
               "Name of the file that contains positions and orientations for "
               "every camera in the global/world frame, i.e. T_G_B");
+DEFINE_string(backward_grid_pose_format, "Standard",
+              "Format of the pose file. Options: Standard, StandardNamed, COLMAP, "
+              "PIX4D, ROS)");
 DEFINE_string(backward_grid_prefix_images, "",
               "Prefix of the images to be loaded, e.g. 'images_'");
+DEFINE_bool(backward_grid_show_images, false, "Show images when loaded.");
 DEFINE_string(
     backward_grid_filename_camera_rig, "",
     "Name of the camera calibration file (intrinsics). File ending: .yaml");
@@ -86,14 +90,22 @@ int main(int argc, char** argv) {
   // Load body poses from file.
   Poses T_G_Bs;
   const std::string& path_filename_poses = base + filename_poses;
-  io::PoseFormat pose_format = io::PoseFormat::Standard;
-  io_handler.loadPosesFromFile(pose_format, path_filename_poses, &T_G_Bs);
+  io::PoseFormat pose_format = io::to_format(FLAGS_backward_grid_pose_format);
+  std::vector<std::string> image_names;
+  io_handler.loadPosesFromFile(pose_format, path_filename_poses, &T_G_Bs, &image_names);
 
   // Load images from file.
   size_t num_poses = T_G_Bs.size();
   Images images;
-  io_handler.loadImagesFromFile(filename_images, num_poses, &images,
-                                FLAGS_backward_grid_colored_ortho);
+  if (image_names.empty()) {
+    io_handler.loadImagesFromFile(filename_images, num_poses, &images,
+                                  FLAGS_backward_grid_colored_ortho,
+                                  FLAGS_backward_grid_show_images);
+  } else {
+    io_handler.loadImagesFromFile(base, image_names, &images,
+                                  FLAGS_backward_grid_colored_ortho,
+                                  FLAGS_backward_grid_show_images);
+  }
 
   // Set up layered map (grid_map).
   grid_map::Settings settings_aerial_grid_map;
