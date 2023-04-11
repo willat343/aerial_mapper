@@ -24,6 +24,7 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <minkindr_conversions/kindr_msg.h>
+#include <nav_msgs/Path.h>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -77,7 +78,11 @@ class Stereo {
   image_transport::ImageTransport image_transport_;
   image_transport::Publisher pub_undistorted_image_;
   ros::Publisher pub_point_cloud_;
+  ros::Publisher pub_pose_;
+  ros::Publisher pub_path_;
   sensor_msgs::PointCloud2 point_cloud_ros_msg_;
+  geometry_msgs::PoseStamped pose_msg_;
+  nav_msgs::Path path_msg_;
 
   std::unique_ptr<Rectifier> rectifier_;
   std::unique_ptr<Densifier> densifier_;

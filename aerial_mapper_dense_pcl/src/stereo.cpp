@@ -76,7 +76,17 @@ Stereo::Stereo(const std::shared_ptr<aslam::NCamera> ncameras,
   point_cloud_ros_msg_.is_dense = false;
 
   pub_point_cloud_ = node_handle_.advertise<sensor_msgs::PointCloud2>(
-      "/planar_rectification/point_cloud", 100);
+      "/planar_rectification/point_cloud", 100, true);
+
+  pose_msg_.header.frame_id = "world";
+
+  pub_pose_ = node_handle_.advertise<geometry_msgs::PoseStamped>(
+      "/planar_rectification/T_G_C", 100, true);
+
+  path_msg_.header.frame_id = "world";
+
+  pub_path_ = node_handle_.advertise<nav_msgs::Path>(
+      "/planar_rectification/path", 100, true);
 }
 
 void Stereo::addFrames(const Poses& T_G_Bs, const Images& images,
@@ -186,6 +196,21 @@ void Stereo::processStereoFrame(
   // 5. Publish the point cloud.
   pub_point_cloud_.publish(point_cloud_ros_msg_);
   ros::spinOnce();
+
+  // 6. Publish the pose and path.
+  pose_msg_.header.stamp = timestamp;
+  pose_msg_.pose.position.x = stereo_rig_params_.t_G_C2[0];
+  pose_msg_.pose.position.y = stereo_rig_params_.t_G_C2[1];
+  pose_msg_.pose.position.z = stereo_rig_params_.t_G_C2[2];
+  const Eigen::Quaterniond q{stereo_rig_params_.R_G_C2};
+  pose_msg_.pose.orientation.w = q.w();
+  pose_msg_.pose.orientation.x = q.x();
+  pose_msg_.pose.orientation.y = q.y();
+  pose_msg_.pose.orientation.z = q.z();
+  pub_pose_.publish(pose_msg_);
+  path_msg_.header.stamp = timestamp;
+  path_msg_.poses.push_back(pose_msg_);
+  pub_path_.publish(path_msg_);
 
   // [Optional] Visualize rectification.
   if (settings_.show_rectification) {
