@@ -290,9 +290,10 @@ void AerialMapperIO::loadImagesFromFile(
     } else {
       image = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
     }
+    CHECK(!image.empty()) << "Failed to load image " + image_name;
     if (show) {
-        cv::imshow("Image", image);
-        cv::waitKey(1);
+      cv::imshow("Image", image);
+      cv::waitKey(1);
     }
     images->push_back(image);
   }
