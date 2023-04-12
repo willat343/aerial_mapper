@@ -80,6 +80,7 @@ class Stereo {
   ros::Publisher pub_point_cloud_;
   ros::Publisher pub_pose_;
   ros::Publisher pub_path_;
+  ros::Publisher pub_disparity_image_;
   sensor_msgs::PointCloud2 point_cloud_ros_msg_;
   geometry_msgs::PoseStamped pose_msg_;
   nav_msgs::Path path_msg_;
@@ -96,6 +97,9 @@ class Stereo {
   aslam::Transformation T_B_C_;
   cv::Mat image_distorted_1_;
   cv::Mat image_distorted_2_;
+
+  static constexpr int vis_width{1600};
+  static constexpr int vis_height{1200};
 };
 
 }  // namespace stereo

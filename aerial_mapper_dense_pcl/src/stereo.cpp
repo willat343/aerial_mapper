@@ -87,6 +87,9 @@ Stereo::Stereo(const std::shared_ptr<aslam::NCamera> ncameras,
 
   pub_path_ = node_handle_.advertise<nav_msgs::Path>(
       "/planar_rectification/path", 100, true);
+
+  pub_disparity_image_ = node_handle_.advertise<sensor_msgs::Image>(
+      "/planar_rectification/disparity", 100, true);
 }
 
 void Stereo::addFrames(const Poses& T_G_Bs, const Images& images,
@@ -195,9 +198,16 @@ void Stereo::processStereoFrame(
   
   // 5. Publish the point cloud.
   pub_point_cloud_.publish(point_cloud_ros_msg_);
-  ros::spinOnce();
 
-  // 6. Publish the pose and path.
+  // 6. Publish the disparity image.
+  cv_bridge::CvImage disparity_image_msg;
+  disparity_image_msg.header.stamp = timestamp;
+  disparity_image_msg.header.frame_id = "camera";
+  disparity_image_msg.encoding = sensor_msgs::image_encodings::TYPE_32FC1;
+  disparity_image_msg.image = densified_stereo_pair.disparity_map;
+  pub_disparity_image_.publish(disparity_image_msg.toImageMsg());
+
+  // 7. Publish the pose and path.
   pose_msg_.header.stamp = timestamp;
   pose_msg_.pose.position.x = stereo_rig_params_.t_G_C2[0];
   pose_msg_.pose.position.y = stereo_rig_params_.t_G_C2[1];
@@ -211,6 +221,8 @@ void Stereo::processStereoFrame(
   path_msg_.header.stamp = timestamp;
   path_msg_.poses.push_back(pose_msg_);
   pub_path_.publish(path_msg_);
+
+  ros::spinOnce();
 
   // [Optional] Visualize rectification.
   if (settings_.show_rectification) {
@@ -245,6 +257,10 @@ void Stereo::visualizeRectification(
              cv::Scalar(255, 255, 255));
   }
   cv::vconcat(images_undistorted, images_undistorted_rectified, all_images);
+  const double scale = std::min(
+    static_cast<double>(vis_width)/static_cast<double>(all_images.size().width),
+    static_cast<double>(vis_height)/static_cast<double>(all_images.size().height));
+  cv::resize(all_images, all_images, cv::Size(), scale, scale);
   cv::imshow("top: undistorted, bottom: undistorted + rectified",
              all_images);
   cv::waitKey(1);

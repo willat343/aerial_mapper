@@ -90,14 +90,16 @@ void Rectifier::rectifyStereoPair(const StereoRigParameters& stereo_pair,
       // Rectify image 1.
       const Eigen::Vector3f xyw_1 =
           T1_inv * (Eigen::Vector3f() << u_rect, v_rect, 1.0).finished();
-      CHECK_NE(xyw_1(2), 0.0);
+      CHECK_NE(xyw_1(2), 0.0) << "Failed to rectify\n"
+        << (Eigen::Vector3f() << u_rect, v_rect, 1.0).finished();
       map_rectify_1_x_ptr_[u_rect] = xyw_1(0) / xyw_1(2);
       map_rectify_1_y_ptr_[u_rect] = xyw_1(1) / xyw_1(2);
 
       // Rectify image 2.
       const Eigen::Vector3f xyw_2 =
           T2_inv * (Eigen::Vector3f() << u_rect, v_rect, 1.0).finished();
-      CHECK_NE(xyw_2(2), 0.0);
+      CHECK_NE(xyw_2(2), 0.0) << "Failed to rectify\n"
+        << (Eigen::Vector3f() << u_rect, v_rect, 1.0).finished();
       map_rectify_2_x_ptr_[u_rect] = xyw_2(0) / xyw_2(2);
       map_rectify_2_y_ptr_[u_rect] = xyw_2(1) / xyw_2(2);
     }  // for u_rect
