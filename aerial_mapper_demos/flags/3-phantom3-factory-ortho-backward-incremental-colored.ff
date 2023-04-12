@@ -3,15 +3,16 @@
 --v=200
 
 # dataset
---backward_grid_data_directory=/tmp/simulation/
---backward_grid_filename_poses=frame_20190829091111_x_opt_poses.txt
+--backward_grid_data_directory=/tmp/phantom3-factory-kfs/
+--backward_grid_filename_poses=original/trajectory.txt
 --backward_grid_pose_format=StandardNamed
---backward_grid_prefix_images=frame_20190829091111_x_
+--backward_grid_prefix_images=original/rgb/
+--backward_grid_postfix_images=.jpg
 --backward_grid_show_images=false
 --backward_grid_filename_camera_rig=camera_fixed_wing.yaml
 
 # densification
---dense_pcl_use_every_nth_image=10
+--dense_pcl_use_every_nth_image=1
 
 # backward grid orthomosaic
 --backward_grid_show_orthomosaic_opencv=true
@@ -23,10 +24,13 @@
 --backward_grid_colored_ortho=true
 --backward_grid_center_easting=0.0
 --backward_grid_center_northing=0.0
---backward_grid_delta_easting=200.0
---backward_grid_delta_northing=200.0
---backward_grid_resolution=0.5
+--backward_grid_delta_easting=1000.0
+--backward_grid_delta_northing=1000.0
+--backward_grid_resolution=1.0
 --backward_grid_use_multi_threads=true
 
 # incremental
 --incremental_pause_ms=1000
+
+# rectification
+--use_BM=false

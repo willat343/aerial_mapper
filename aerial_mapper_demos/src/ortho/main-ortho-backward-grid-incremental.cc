@@ -27,6 +27,8 @@ DEFINE_string(backward_grid_pose_format, "Standard",
               "PIX4D, ROS)");
 DEFINE_string(backward_grid_prefix_images, "",
               "Prefix of the images to be loaded, e.g. 'images_'");
+DEFINE_string(backward_grid_postfix_images, "",
+              "Postfix of the images to be loaded, e.g. '.jpg'. If using StandardNamed, this gets added to the name.");
 DEFINE_bool(backward_grid_show_images, false, "Show images when loaded.");
 DEFINE_string(
     backward_grid_filename_camera_rig, "",
@@ -64,6 +66,8 @@ DEFINE_bool(backward_grid_use_multi_threads, false,
 DEFINE_bool(use_BM, true,
             "Use BM Blockmatching if true. Use SGBM (=Semi-Global-) "
             "Blockmatching if false.");
+DEFINE_int64(incremental_pause_ms, -1, "Pause between iterations. -1 (default) "
+                                     " = disabled, 0 = until keypress, >0 = ms");
 
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
@@ -102,7 +106,10 @@ int main(int argc, char** argv) {
                                   FLAGS_backward_grid_colored_ortho,
                                   FLAGS_backward_grid_show_images);
   } else {
-    io_handler.loadImagesFromFile(base, image_names, &images,
+    for (auto& image_name : image_names) {
+        image_name += FLAGS_backward_grid_postfix_images;
+    }
+    io_handler.loadImagesFromFile(filename_images, image_names, &images,
                                   FLAGS_backward_grid_colored_ortho,
                                   FLAGS_backward_grid_show_images);
   }
@@ -174,6 +181,9 @@ int main(int argc, char** argv) {
         T_G_Bs_subset.clear();
       }
       ++pcl_cnt;
+      if (FLAGS_incremental_pause_ms >= 0) {
+        cv::waitKey(FLAGS_incremental_pause_ms);
+      }
     }
   }
 
